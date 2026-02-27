@@ -9,6 +9,7 @@ import {
   GraduationCap,
   ArrowRight
 } from "lucide-react";
+import { BASE_URL } from "../Apipath";
 
 const Mca = () => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ const Mca = () => {
   useEffect(() => {
     const fetchMca = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/create");
+        const res = await fetch(`${BASE_URL}/api/create`);
         const data = await res.json();
         const mcaCourses = data.filter(
           (item) => item.courses?.trim().toUpperCase() === "MCA"

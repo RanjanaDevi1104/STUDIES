@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { 
   User, Mail, Phone, School, BookOpen, GraduationCap, ArrowRight, ArrowLeft 
 } from "lucide-react";
+import { BASE_URL } from "../Apipath";
 
 const EnrollForm = () => {
   const location = useLocation();
@@ -35,7 +36,7 @@ const handleSubmit = async (e) => {
 
   try {
     const response = await fetch(
-      "http://localhost:5000/api/enroll/create",
+      `${BASE_URL}/api/enroll/create`,
       {
         method: "POST",
         headers: {

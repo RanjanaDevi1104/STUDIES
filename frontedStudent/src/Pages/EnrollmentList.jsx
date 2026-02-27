@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../Apipath";
 
 const EnrollmentList = () => {
   const [enrollments, setEnrollments] = useState([]);
@@ -17,7 +18,7 @@ const EnrollmentList = () => {
 
       try {
         const response = await fetch(
-          "http://localhost:5000/api/enroll/get/id",
+          `${BASE_URL}/api/enroll/get/id`,
           {
             method: "GET",
             headers: {

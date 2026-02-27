@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { Mail, Lock, LogIn, ArrowRight } from "lucide-react";
+import { BASE_URL } from "../Apipath";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -22,7 +23,7 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post("https://studies-qv8r.onrender.com/api/auth/login", { email, password });
+      const res = await axios.post(`${BASE_URL}/api/auth/login`, { email, password });
       
       if (res.data.role === "admin" && res.data.admintoken) {
         localStorage.setItem("admintoken", res.data.admintoken);

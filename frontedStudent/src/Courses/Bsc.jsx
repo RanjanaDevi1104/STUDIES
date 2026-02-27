@@ -11,6 +11,7 @@ import {
   Microscope,
   ArrowRight
 } from "lucide-react";
+import { BASE_URL } from "../Apipath";
 
 const Bsc = () => {
   const navigate = useNavigate(); // ✅ navigate initialize kiya
@@ -22,7 +23,7 @@ const Bsc = () => {
   useEffect(() => {
     const fetchBsc = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/create");
+        const res = await fetch(`${BASE_URL}/api/create`);
         const data = await res.json();
         
         const bscCourses = data.filter(

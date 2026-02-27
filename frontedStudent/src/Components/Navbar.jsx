@@ -1,13 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
-import { Search, ChevronDown, Menu, X, GraduationCap, ClipboardList } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Search, ChevronDown, Menu, X, GraduationCap } from "lucide-react";
 
 const Navbar = () => {
   const [showCourses, setShowCourses] = useState(false);
   const [search, setSearch] = useState("");
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  
   const location = useLocation();
+  const navigate = useNavigate();
+  const searchRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -17,6 +22,17 @@ const Navbar = () => {
 
   useEffect(() => setMobileMenuOpen(false), [location]);
 
+  // Click outside search to close suggestions
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const courses = [
     { name: "BCA", path: "/bca" },
     { name: "BBA", path: "/bba" },
@@ -25,11 +41,30 @@ const Navbar = () => {
     { name: "BA", path: "/ba" },
   ];
 
+  // Handle Input Change and Filter
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setSearch(value);
+
+    if (value.trim().length > 0) {
+      const filtered = courses.filter((course) =>
+        course.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredSuggestions(filtered);
+      setShowSuggestions(true);
+    } else {
+      setFilteredSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
     const foundCourse = courses.find(c => c.name.toLowerCase() === search.trim().toLowerCase());
     if (foundCourse) {
-      window.location.href = foundCourse.path;
+      navigate(foundCourse.path);
+      setShowSuggestions(false);
+      setSearch("");
     } else {
       alert("Course not found");
     }
@@ -57,17 +92,40 @@ const Navbar = () => {
             </span>
           </Link>
 
-          {/* Desktop Search */}
-          <form onSubmit={handleSearch} className="hidden lg:flex items-center bg-slate-800/50 border border-slate-700 rounded-full px-4 py-1.5 focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-blue-500 transition-all w-full max-w-sm mx-8">
-            <Search size={16} className="text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search courses..."
-              className="bg-transparent border-none focus:outline-none px-3 text-sm text-white w-full placeholder-slate-500"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </form>
+          {/* Desktop Search with Suggestions */}
+          <div className="relative hidden lg:block w-full max-w-sm mx-8" ref={searchRef}>
+            <form onSubmit={handleSearch} className="flex items-center bg-slate-800/50 border border-slate-700 rounded-full px-4 py-1.5 focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-blue-500 transition-all w-full">
+              <Search size={16} className="text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search courses (e.g. BCA, BBA)..."
+                className="bg-transparent border-none focus:outline-none px-3 text-sm text-white w-full placeholder-slate-500"
+                value={search}
+                onChange={handleInputChange}
+                onFocus={() => search.length > 0 && setShowSuggestions(true)}
+              />
+            </form>
+
+            {/* Suggestions Dropdown */}
+            {showSuggestions && filteredSuggestions.length > 0 && (
+              <div className="absolute top-full left-0 mt-2 w-full bg-slate-800 border border-slate-700 rounded-xl shadow-2xl overflow-hidden z-50">
+                {filteredSuggestions.map((course) => (
+                  <button
+                    key={course.name}
+                    onClick={() => {
+                      navigate(course.path);
+                      setSearch("");
+                      setShowSuggestions(false);
+                    }}
+                    className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-blue-600 hover:text-white transition-colors flex items-center gap-2"
+                  >
+                    <Search size={14} className="opacity-50" />
+                    {course.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">
@@ -90,10 +148,9 @@ const Navbar = () => {
                 </div>
               </li>
 
-              {/* Added Enrollments Link */}
               <li><NavLink to="/enrollmentlist" className={navLinkClass}>EnrollmentList</NavLink></li>
               <li><NavLink to="/about" className={navLinkClass}>About</NavLink></li>
-              <li><NavLink to="/courses" className={navLinkClass}>courses</NavLink></li>
+              <li><NavLink to="/contact" className={navLinkClass}>Contact</NavLink></li>
             </ul>
 
             <div className="flex items-center gap-3 border-l border-slate-700 pl-6">
@@ -118,7 +175,7 @@ const Navbar = () => {
         <div className="p-4 space-y-4">
           <div className="grid grid-cols-1 gap-2">
             <NavLink to="/" className="px-4 py-2 rounded-lg hover:bg-slate-800 text-gray-300">Home</NavLink>
-            <NavLink to="/enrollments" className="px-4 py-2 rounded-lg hover:bg-slate-800 text-gray-300">Enrollments</NavLink>
+            <NavLink to="/enrollmentlist" className="px-4 py-2 rounded-lg hover:bg-slate-800 text-gray-300">Enrollments</NavLink>
             <NavLink to="/about" className="px-4 py-2 rounded-lg hover:bg-slate-800 text-gray-300">About</NavLink>
             <NavLink to="/contact" className="px-4 py-2 rounded-lg hover:bg-slate-800 text-gray-300">Contact</NavLink>
           </div>

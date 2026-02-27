@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { BASE_URL } from "../Apipath";
 import { useNavigate } from "react-router-dom"; // ✅ useNavigate import kiya
 import { 
   ChevronRight, 
@@ -22,7 +23,7 @@ const Bba = () => {
   useEffect(() => {
     const fetchBba = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/create");
+        const res = await fetch(`${BASE_URL}/api/create`);
         const data = await res.json();
         
         // ✅ ONLY BBA FILES

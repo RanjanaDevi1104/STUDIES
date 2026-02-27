@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { User, Mail, Lock, UserPlus, ArrowRight } from "lucide-react";
+import { BASE_URL } from "../Apipath";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -19,7 +20,7 @@ const Register = () => {
 
     setLoading(true);
     try {
-      await axios.post("https://studies-qv8r.onrender.com/api/auth/register", {
+      await axios.post(`${BASE_URL}/api/auth/register`, {
         name,
         email,
         password,
